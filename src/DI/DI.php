@@ -8,6 +8,7 @@ use bits\Markdown\Markdown;
 use bits\Request\Request;
 use bits\Response\Response;
 use bits\Router\Router;
+use bits\Translation\I18n;
 
 /**
  * @property Request request
@@ -17,6 +18,7 @@ use bits\Router\Router;
  * @property Router router
  * @property Markdown markdown
  * @property Markdown md
+ * @property I18n i18n
  */
 class DI
 {
