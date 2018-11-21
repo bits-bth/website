@@ -9,3 +9,13 @@ require INSTALL_PATH . '/vendor/autoload.php';
 
 $di = new \bits\DI\DI();
 $di->loadServices(INSTALL_PATH . '/config/services');
+
+foreach (glob(INSTALL_PATH . "/config/routes/*.php") as $file)
+    require $file;
+
+$di->res->send(
+    $di->router->handle(
+        $di->req->getRoute(),
+        $di->req->getMethod()
+    )
+);
