@@ -1,0 +1,16 @@
+# Intellij idea files
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# VSCode config directory
+.vscode/
+
+# Composer files
+vendor/
+
+# Other
+setup.sql
+research.md
+*~

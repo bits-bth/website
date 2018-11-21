@@ -1,0 +1,9 @@
+RewriteEngine on
+
+# Igore real files (images, stylesheets etc.)
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule (.*) - [NC,L]
+
+RewriteCond %{HTTP_HOST} ^.*$ [NC]
+RewriteRule (.*)/? index.php/$1 [NC,L]
