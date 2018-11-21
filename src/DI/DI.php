@@ -6,12 +6,14 @@ use Exception;
 use bits\Common\Util;
 use bits\Request\Request;
 use bits\Response\Response;
+use bits\Router\Router;
 
 /**
  * @property Request request
  * @property Request req
  * @property Response response
  * @property Response res
+ * @property Router router
  */
 class DI
 {
