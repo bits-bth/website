@@ -4,7 +4,12 @@ namespace bits\DI;
 
 use Exception;
 use bits\Common\Util;
+use bits\Request\Request;
 
+/**
+ * @property Request request
+ * @property Request req
+ */
 class DI
 {
     private $services = [];
