@@ -5,10 +5,13 @@ namespace bits\DI;
 use Exception;
 use bits\Common\Util;
 use bits\Request\Request;
+use bits\Response\Response;
 
 /**
  * @property Request request
  * @property Request req
+ * @property Response response
+ * @property Response res
  */
 class DI
 {
