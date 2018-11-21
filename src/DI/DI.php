@@ -4,6 +4,7 @@ namespace bits\DI;
 
 use Exception;
 use bits\Common\Util;
+use bits\Markdown\Markdown;
 use bits\Request\Request;
 use bits\Response\Response;
 use bits\Router\Router;
@@ -14,6 +15,8 @@ use bits\Router\Router;
  * @property Response response
  * @property Response res
  * @property Router router
+ * @property Markdown markdown
+ * @property Markdown md
  */
 class DI
 {
