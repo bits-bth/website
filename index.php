@@ -6,3 +6,6 @@ error_reporting(E_ALL);
 
 define('INSTALL_PATH', __DIR__);
 require INSTALL_PATH . '/vendor/autoload.php';
+
+$di = new \bits\DI\DI();
+$di->loadServices(INSTALL_PATH . '/config/services');
