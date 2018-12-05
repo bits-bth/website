@@ -35,25 +35,25 @@ class I18n extends ServiceProvider
 
     /**
      * @return string The language target found (default: en_US)
-     * @throws TranslationTargetNotFoundException If no language target was found.
      */
     private function getLanguageTarget(): string
     {
-        $languages = explode(",", $this->di->request->getServer("HTTP_ACCEPT_LANGUAGE", "en_US"));
+        $languages = explode(",", Request::getServer("HTTP_ACCEPT_LANGUAGE", "en_US"));
         foreach ($languages as $lang) {
-            if (isset($this->translations[$lang]))
+            $lang = explode(";", $lang)[0];
+            if (isset($this->translations[$lang])) {
                 return $lang;
-            else {
+            } else {
                 $keys = [];
                 foreach ($this->translations as $key => $value)
                     if (substr($key, 0, strlen($lang)) === $lang)
                         $keys[] = $key;
 
                 if (count($keys) == 1) return $keys[0];
-                elseif (count($keys) == 0) throw new TranslationTargetNotFoundException($lang);
+                elseif (count($keys) == 0) continue;
                 else {
                     // TODO: Determinate a better translation
-                    continue;
+                    return $keys[0];
                 }
             }
         }
