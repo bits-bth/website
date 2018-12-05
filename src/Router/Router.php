@@ -46,6 +46,17 @@ class Router
         }
     }
 
+    /**
+     * Register a route on a method.
+     *
+     * The handler is a array with the first item is the
+     * controller class and the second is the method that
+     * will handle the route.
+     *
+     * @param string $method
+     * @param string $route
+     * @param array $handler
+     */
     public function add(string $method, string $route, array $handler)
     {
         $m = strtoupper($method);
@@ -54,6 +65,13 @@ class Router
         $this->routes[$m][$route][] = $handler;
     }
 
+    /**
+     * Handles a route.
+     *
+     * @param string $route
+     * @param string $method
+     * @return mixed|string|string[]|null
+     */
     public function handle(string $route, string $method)
     {
         $routes = $this->routes[strtoupper($method)];
@@ -68,12 +86,8 @@ class Router
             if (count($matches) > 0) {
                 array_shift($matches);
                 foreach ($handlers as $handler) {
-                    try {
-                        $method = new ReflectionMethod($handler[0], $handler[1]);
-                    } catch (ReflectionException $e) {
-                        continue;
-                    }
-                    $res = $method->invokeArgs($handler[0], $matches);
+                    $instance = new $handler[0]();
+                    $res = call_user_func_array([$instance, $handler[1]], $matches);
                     if ($res === null) {
                         continue;
                     }
@@ -81,5 +95,6 @@ class Router
                 }
             }
         }
+        return null;
     }
 }
