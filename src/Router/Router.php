@@ -2,16 +2,15 @@
 
 namespace bits\Router;
 
-use ReflectionException;
-use ReflectionMethod;
+use bits\DI\ServiceProvider;
 
-class Router
+class Router extends ServiceProvider
 {
     private $routes = [];
 
-    public function __construct()
+    public static function name(): string
     {
-        $this->routes = [];
+        return "router";
     }
 
     public function get(string $route, array $handler)

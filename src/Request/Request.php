@@ -2,7 +2,9 @@
 
 namespace bits\Request;
 
-class Request
+use bits\DI\ServiceProvider;
+
+class Request extends ServiceProvider
 {
     private $route;
     private $path;
@@ -22,6 +24,16 @@ class Request
         $this->post = array_merge($_POST);
         $this->get = array_merge($_GET);
         $this->method = $this->getServer("REQUEST_METHOD", "GET");
+    }
+
+    public static function name(): string
+    {
+        return "request";
+    }
+
+    public static function alias(): array
+    {
+        return ["req"];
     }
 
     /**

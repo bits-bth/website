@@ -2,15 +2,26 @@
 
 namespace bits\Markdown;
 
+use bits\DI\ServiceProvider;
 use Parsedown;
 
-class Markdown
+class Markdown extends ServiceProvider
 {
     private $parser;
 
     public function __construct()
     {
         $this->parser = new Parsedown();
+    }
+
+    public static function name(): string
+    {
+        return "markdown";
+    }
+
+    public static function alias(): array
+    {
+        return ["md"];
     }
 
     public function getFile(string $path): Content

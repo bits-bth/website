@@ -2,10 +2,22 @@
 
 namespace bits\Response;
 
-class Response
+use bits\DI\ServiceProvider;
+
+class Response extends ServiceProvider
 {
     private $statusCode;
     private $body;
+
+    public static function name(): string
+    {
+        return "response";
+    }
+
+    public static function alias(): array
+    {
+        return ["res"];
+    }
 
     public function send($body)
     {

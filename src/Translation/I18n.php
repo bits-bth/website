@@ -2,14 +2,25 @@
 
 namespace bits\Translation;
 
-use bits\DI\IDIContainer;
-use bits\DI\TDIContainer;
+use bits\Facade\Request;
+use bits\DI\ServiceProvider;
 
-class I18n implements IDIContainer
+class I18n extends ServiceProvider
 {
-    use TDIContainer;
-
     private $translations = [];
+
+    public static function name(): string
+    {
+        return "i18n";
+    }
+
+    public function boot()
+    {
+        foreach (glob(INSTALL_PATH . "/config/translations/*.php") as $file) {
+            $language = basename($file, ".php");
+            I18n::add($language, require $file);
+        }
+    }
 
     public function add(string $language, array $translations)
     {

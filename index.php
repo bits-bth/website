@@ -8,7 +8,13 @@ define('INSTALL_PATH', __DIR__);
 require INSTALL_PATH . '/vendor/autoload.php';
 
 $di = new \bits\DI\DI();
-$di->loadServices(INSTALL_PATH . '/config/services');
+$di->addServices([
+    \bits\Request\Request::class,
+    \bits\Response\Response::class,
+    \bits\Router\Router::class,
+    \bits\Markdown\Markdown::class,
+    \bits\Translation\I18n::class,
+]);
 
 foreach (glob(INSTALL_PATH . "/config/routes/*.php") as $file)
     require $file;

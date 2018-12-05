@@ -2,13 +2,12 @@
 
 namespace bits\DI;
 
-use Exception;
-use bits\Common\Util;
 use bits\Markdown\Markdown;
 use bits\Request\Request;
 use bits\Response\Response;
 use bits\Router\Router;
 use bits\Translation\I18n;
+use Throwable;
 
 /**
  * @property Request request
@@ -22,68 +21,78 @@ use bits\Translation\I18n;
  */
 class DI
 {
-    private $services = [];
-    private $loadedServices = [];
+    private $inactive = [];
+    private $active = [];
 
-    public function loadServices($services): void
+    /**
+     * Adds a service to be able to be loaded.
+     * HAS TO EXTEND \bits\Service\ServiceProvider.
+     *
+     * @example
+     * addService(\vendor\MyService)
+     *
+     * @param string $serviceClass The service to be added.
+     */
+    public function addService(string $serviceClass)
     {
-        if (is_string($services) && is_dir($services)) {
-            foreach (glob("$services/*.php") as $file) {
-                $service = require "$file";
-                $this->createService($service);
-            }
-        } else if (is_array($services)) {
-            foreach ($services as $service) {
-                $this->createService($service);
-            }
+        if (is_subclass_of($serviceClass, ServiceProvider::class)) {
+            $this->inactive[] = $serviceClass;
         }
     }
 
-    public function createService(array $service): void
+    public function addServices(array $serviceClasses)
     {
-        if (!Util::is_assoc($service)) {
-            foreach ($service as $innerService) {
-                $this->createService($innerService);
-            }
-            return;
+        foreach ($serviceClasses as $serviceClass) {
+            $this->addService($serviceClass);
         }
-        $this->services[$service["name"]] = $service["callback"];
     }
 
     /**
-     * @param string $service
-     * @return mixed|null
-     * @throws \Exception
+     * Loads a service to be used.
+     *
+     * @param $service string The service to be loaded
+     * @return ServiceProvider|null Returns the service provider associated with the service or null
+     * @throws \Exception If the service provider boot function throws an exception
      */
-    public function load(string $service)
+    private function loadService($service)
     {
-        if (!isset($this->services[$service]))
-            return null;
-        $callback = $this->services[$service];
-
-        if (is_callable($callback)) $instance = $callback();
-        elseif (is_object($callback)) $instance = $callback;
-        elseif (is_string($callback)) $instance = new $callback();
-        else throw new Exception("Unable to instantiate '" . $service . "' service!");
-
-        $this->loadedServices[$service] = $instance;
-        return $instance;
+        foreach ($this->inactive as $inactiveService) {
+            if ($inactiveService::name() === $service || in_array($service, $inactiveService::alias())) {
+                $instance = new $inactiveService();
+                if ($instance instanceof ServiceProvider) {
+                    $instance->setDi($this);
+                    try {
+                        $instance->boot();
+                    } catch (Throwable $e) {
+                        throw new \Exception("Exception thrown while $inactiveService was booting", 1, $e);
+                    }
+                    $this->active[$instance::name()] = $instance;
+                    foreach ($instance::alias() as $alias) {
+                        $this->active[$alias] = $instance;
+                    }
+                    return $instance;
+                }
+            }
+        }
+        return null;
     }
 
     public function has(string $service): bool
     {
-        return isset($this->loadedServices[$service]);
-    }
-
-    public function get(string $service): object
-    {
-        if ($this->has($service)) {
-            return $this->loadedServices[$service];
+        foreach ($this->inactive as $loadedService) {
+            if ($loadedService::name() === $service || in_array($service, $loadedService::alias())) {
+                return true;
+            }
         }
-        return $this->load($service);
+        return false;
     }
 
-    public function __get(string $service): object
+    public function get(string $service)
+    {
+        return $this->active[$service] ?? $this->loadService($service);
+    }
+
+    public function __get(string $service)
     {
         return $this->get($service);
     }
