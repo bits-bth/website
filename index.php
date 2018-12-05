@@ -15,6 +15,7 @@ $di->addServices([
     \bits\Markdown\Markdown::class,
     \bits\Translation\I18n::class,
 ]);
+\bits\DI\Facade::setRoot($di);
 
 foreach (glob(INSTALL_PATH . "/config/routes/*.php") as $file)
     require $file;
